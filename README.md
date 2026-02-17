@@ -5,87 +5,35 @@ This is a simple authentication system built using Node.js (Backend) and HTML, C
 It includes:
 
 ✅ User Signup
-
 ✅ User Login
-
 ✅ Forgot Password
-
 ✅ OTP sent to Email
-
 ✅ Password Reset using OTP
-
 ✅ JWT Authentication
 
 🛠️ Tech Stack
 
-Backend:
+Backend:Node.js,Express.js,bcrypt,jsonwebtoken (JWT)Nodemailer (for sending OTP email),MySQL,dotenv
 
-Node.js
-
-Express.js
-
-bcrypt
-
-jsonwebtoken (JWT)
-
-Nodemailer (for sending OTP email)
-
-MySQL / MongoDB
-
-dotenv
-
-Frontend:
-
-HTML
-
-CSS
-
-JavaScript (Fetch / Axios)
-
-📁 Project Structure
-Authentication-Demo/
-│
-├── Backend/
-│   ├── index.js
-│   ├── routes/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── .env
-│
-├── Frontend/
-│   ├── signup.html
-│   ├── login.html
-│   ├── forgot-password.html
-│   ├── reset-password.html
-│
-└── README.md
+Frontend:HTML,CSS,JavaScript (Fetch / Axios)
 
 🚀 Features
 📝 Signup
 
-User registers with name, email, and password
-
-Password is hashed using bcrypt
-
-Data stored in database
+-->User registers with name, email, and password
+-->Password is hashed using bcrypt
+-->Data stored in database
 
 🔐 Login
-
-User logs in with email and password
-
-JWT token generated after successful login
+-->User logs in with email and password
+-->JWT token generated after successful login
 
 🔁 Forgot Password
-
-User enters registered email
-
-OTP is generated
-
-OTP sent to user’s email
-
-User verifies OTP
-
-User sets new password
+-->User enters registered email
+-->OTP is generated
+-->OTP sent to user’s email
+-->User verifies OTP
+-->User sets new password
 
 ⚙️ Backend Setup
 1️⃣ Go to Backend Folder
