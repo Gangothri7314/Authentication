@@ -3,7 +3,7 @@ import cors from 'cors'
 import bcrypt from 'bcrypt'
 import pool from  './db.js'
 const app=express()
-import {generateOTP,currentOTPs,sendEmail} from './utils.js'
+import {generateAccessToken,generateOTP,currentOTPs,sendEmail,JWTMiddleware} from './utils.js'
 
 app.use(cors({origin:'*'}))
 app.use(express.json())
@@ -71,19 +71,44 @@ app.post('/reset-password', async (req, res) => {
   }
   
 })
-app.post('/user-login',async (req, res) => {
-  console.log('Line 15: ',req,body)
-  const email=req.body.email
-  const password=req.body.password
-  const user= await pool.query(`select *from users where email='${email}'`);
-  const passwordHash=user[0].passwordHash
-  const isPasswordCorrect = await bcrypt.compare(password, passwordHash);
-  if(isPasswordCorrect){
-    res.status(200).json({userAuthenticated:true});
-  }else{
-    console.log('Is password Correct?', isPasswordCorrect);
+app.post('/user-login', async (req, res) => {
+  try {
+    console.log('Line 15: ', req.body);
+
+    const { email, password } = req.body;
+
+    const [rows] = await pool.query(
+      "SELECT * FROM users WHERE email = ?",
+      [email]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const passwordHash = rows[0].passwordHash;
+
+    const isPasswordCorrect = await bcrypt.compare(password, passwordHash);
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const accessToken = generateAccessToken({
+      email: rows[0].email,
+      name: rows[0].name
+    });
+
+    res.status(200).json({
+      userAuthenticated: true,
+      accessToken
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Login failed" });
   }
-})
+});
 
 app.post('/register-user',async (req,res)=>{
     console.log('Line 16:',req.body)
@@ -99,7 +124,13 @@ app.post('/register-user',async (req,res)=>{
 })
 
 
-const PORT = 5000
+
+app.get('/get-user-data', JWTMiddleware, (req, res) => {
+  res.status(200).json({message:'This is protected route,and only you should be able to access this site'})
+
+})
+  
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)

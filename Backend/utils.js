@@ -1,6 +1,6 @@
 //const nodemailer = require("nodemailer");
 import nodemailer from 'nodemailer';
-
+import jwt from 'jsonwebtoken';
 const transporter = nodemailer.createTransport({
   service:'gmail', // Use true for port 465, false for port 587
   auth: {
@@ -34,3 +34,28 @@ export const sendEmail= async (email,otp)=>
     })
 }
 
+
+const accessTokenSecret="randomAccessSecret";
+export function generateAccessToken(user){
+    return jwt.sign(user,accessTokenSecret,{
+        expiresIn:'20min'
+    })
+}
+
+export const JWTMiddleware=(req,res,next)=>{
+    let reqHeaders=req.headers['authorization']
+    if(!reqHeaders){
+        res.status(404).json({message:'Unauthorized,Invalid token!'})
+    }
+    let token=reqHeaders.split(" ")[1]
+    jwt.verify(token,accessTokenSecret,(err,user)=>{
+        if(err){
+            res.status(404).json({message:'Forbidden,Invalid token!'})
+        }
+        req.user=user;
+        next();
+    })
+
+        
+
+}
